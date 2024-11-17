@@ -1,0 +1,12 @@
+{#- vim: set et ts=8 sts=4 sw=4 ai: -#}
+{% extends "help.html" %}
+{% block js %}
+{{ super() }}
+{% include 'snippets/renderer_js.html' %}
+{% endblock %}
+{% block content %}
+<div class="page">
+<h2>Markdown Syntax</h2>
+{% include "snippets/syntax.html" %}
+</div>
+{% endblock %}

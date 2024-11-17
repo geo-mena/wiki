@@ -1,0 +1,25 @@
+{#- vim: set et ts=8 sts=4 sw=4 ai: -#}
+{% extends "wiki.html" %}
+{% block menu %}
+{% include "snippets/documentation-menu.html" %}
+{% if toc %}
+<div class="sidebar-toc d-xl-none">
+<div class="sidebar-divider"></div>
+    {% for count, html, level, text, anchor in toc %}
+    <a href="#{{anchor}}" class="sidebar-link sidebar-toc-{{level}}">{{text}}</a>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_nav -%}
+    {% for count, html, level, text, anchor in toc %}
+    <a href="#{{anchor}}" class="sidebar-link sidebar-toc-{{level}}">{{text}}</a>
+    {% endfor %}
+{%- endblock %}
+
+{% block content %}
+<div class="page">
+{{content|safe}}
+</div>
+{% endblock %}

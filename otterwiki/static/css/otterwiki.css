@@ -1,0 +1,410 @@
+/* vim: set et sts=4 ts=4 sw=4 ai: */
+@import "halfmoon-variables.css";
+@import "elements/page.css";
+@import "elements/table.css";
+@import "elements/toast.css";
+@import "partials/sidebar.css";
+@import "partials/documentation.css";
+@import "partials/history.css";
+
+.navbar {
+    background: #d2d2d2;
+}
+
+.navbar-content .dropdown button {
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+.navbar-content .btn {
+    min-width: 4.6rem;
+}
+
+/* Headlines and anchors */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.relative {
+    position: relative;
+}
+
+.relative {
+    position: relative;
+}
+
+a.anchor,
+a.anchor:hover {
+    text-decoration: none;
+    font-size: 40%;
+    position: relative;
+    margin-left: 1rem;
+    bottom: 0.4rem;
+    opacity: 0;
+}
+
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor {
+    opacity: 1;
+}
+
+/* hide content editor to prevent flash while codemirror is loading */
+#content_editor {
+    display: none;
+}
+
+.block-compact {
+    margin-block-start: 0rem !important;
+    margin-block-end: 0rem !important;
+}
+
+/* pre and code */
+
+div.page > div.highlight {
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
+}
+
+.page pre {
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
+}
+
+code,
+pre,
+.code {
+    padding: 0.2rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    font-size: inherit;
+    line-height: 1.5;
+    padding: 0.1rem 0.5rem;
+    margin: 0 0.1rem;
+    overflow: auto;
+    min-height: 2.6rem;
+}
+
+.copy-to-clipboard-outer {
+    position: relative;
+}
+
+.copy-to-clipboard-outer:not(:hover) .copy-to-clipboard-inner {
+    display: none;
+}
+
+.copy-to-clipboard-inner {
+    position: absolute;
+    right: 0.2rem;
+    top: 0;
+    padding: 0.2rem;
+}
+
+button.copy-to-clipboard {
+}
+
+.page > .alert > p {
+    margin-block-end: 0.2em;
+}
+
+.dark-mode code,
+.dark-mode pre,
+.dark-mode .code {
+    background-color: #263238;
+}
+
+.dark-mode pre.mermaid,
+pre.mermaid {
+    background-color: transparent;
+}
+
+
+.quote-alert {
+    border-left: .3rem solid;
+    padding: 0.5rem 2rem;
+    margin: 1rem 0em;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+.quote-alert p {
+    margin-block-start: .5rem;
+    margin-block-end: .5rem;
+}
+/* quote alert header */
+.quote-alert-header i {
+    padding: 0 .5rem 0 0;
+    font-size: 1.6rem;
+}
+/* quote alert header */
+.quote-alert-note .quote-alert-header { color: var(--primary-color); }
+.quote-alert-tip .quote-alert-header { color: var(--green-color-dark); }
+.dark-mode .quote-alert-tip .quote-alert-header { color: var(--green-color); }
+.quote-alert-important .quote-alert-header { color: var(--indigo-color); }
+.quote-alert-warning .quote-alert-header { color: var(--yellow-color-dark); }
+.dark-mode .quote-alert-warning .quote-alert-header { color: var(--yellow-color); }
+.quote-alert-caution .quote-alert-header { color: var(--danger-color); }
+/* quote alert border */
+.quote-alert-note { border-color: var(--primary-color); }
+.quote-alert-tip { border-color: var(--green-color-dark); }
+.dark-mode .quote-alert-tip { border-color: var(--green-color); }
+.quote-alert-warning { border-color: var(--yellow-color-dark); }
+.dark-mode .quote-alert-warning { border-color: var(--yellow-color); }
+.quote-alert-caution { border-color: var(--danger-color); }
+.quote-alert-important { border-color: var(--indigo-color); }
+
+.revision-small {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    text-decoration: none;
+    padding: 0 0.5rem;
+    line-height: 2rem;
+    height: 2rem;
+}
+
+.dropdown-icon {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.6rem;
+    margin-right: 1rem;
+    color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 0 solid transparent;
+    border-radius: 0.4rem;
+}
+
+.dropdown-icon:hover {
+    color: rgba(0, 0, 0, 1.0);
+}
+
+.dark-mode .dropdown-icon {
+    color: rgba(255, 255, 255, 0.65);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: transparent;
+}
+
+.dark-mode .dropdown-icon:hover {
+    color: rgba(255, 255, 255, 1.0);
+}
+
+.dropdown-item-with-icon {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    border: 0.4rem solid transparent;
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+}
+
+.dark-mode .dropdown-item-with-icon {
+    color: rgba(255, 255, 255, 0.8);
+    border-color: transparent;
+}
+
+.dropdown-item-with-icon:hover {
+    color: rgba(0, 0, 0, 1.0);
+    text-decoration: none;
+}
+
+.dark-mode .dropdown-item-with-icon:hover {
+    color: rgba(255, 255, 255, 1.0);
+}
+
+#editor {
+    background: transparent;
+    display: none;
+}
+
+#editor-help-markdown {
+    position: absolute;
+    bottom: 3rem;
+    left: 5rem;
+    z-index: 1000;
+    overflow-y: scroll;
+    max-height: 40vh;
+    margin: 0;
+    min-width: 90%;
+}
+
+/* extra nav */
+.extra-nav {
+    position: fixed;
+    margin-right: 1rem;
+    z-index: 20;
+    padding: 2rem 4rem 0rem 1rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    max-height: 95%;
+
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    scrollbar-color: transparent transparent;
+}
+
+.extra-nav::-webkit-scrollbar {
+    width: 1px;
+}
+
+.extra-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.extra-nav::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+.dark-mode .extra-nav {
+}
+
+.extra-nav .sidebar-title {
+    white-space: nowrap;
+}
+
+.sidebar-active {
+    font-weight: bold;
+}
+
+.btn-xsm {
+    height: 2.2rem;
+    line-height: 2.2rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+}
+
+.btn-editor {
+    margin-left: 0.2rem;
+    width: 3.2rem;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.btn-handle {
+    cursor: move;
+}
+
+.extra-nav-attachment {
+    padding: 1rem;
+}
+
+.font-size-10 {
+    font-size: 1rem !important;
+}
+
+.break-all {
+    word-break: break-all;
+}
+
+.right-02 {
+    right: 0.2rem !important;
+}
+
+/* dark mode button tweaks */
+.dark-mode .btn.btn-danger {
+    background-color: #B00020;
+    border-color: #B00020;
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+}
+
+.dark-mode .btn.btn-success {
+    color: #fff;
+    background-color: #4caf50;
+    border-color: #4caf50;
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+}
+
+/* task list */
+.task-list-item-checkbox {
+    margin-right: 1rem;
+    /* disable checkbox without using the disabled property */
+    position: relative;
+    pointer-events: none;
+    margin-left: -2.3rem;
+}
+
+.page ul li.task-list-item,
+.page li.task-list-item {
+    list-style-type: none;
+}
+
+mark {
+    padding: 0.1rem 0.2rem;
+    background-color: #ffb100 !important;
+    color: #000;
+}
+
+.dark-mode mark {
+    padding: 0.1rem 0.2rem;
+    background-color: #DB9A00 !important;
+    color: #000;
+}
+
+.spoiler {
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    padding: 0 1rem 0 1rem;
+}
+
+.dark-mode .spoiler {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.nospoiler,
+.dark-mode .nospoiler {
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: opacity 0.1s ease-in;
+}
+
+.spoiler > * {
+    opacity: 0;
+    margin-block-start: 0;
+}
+
+.nospoiler > * {
+    opacity: 1;
+    transition: opacity 0.1s ease-in;
+    margin-block-start: 0;
+}
+
+.spoiler > .spoiler-button {
+    margin: 1rem 0;
+    width: 3rem;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 0;
+    border-radius: 0.4rem;
+}
+
+.dark-mode .spoiler > .spoiler-button {
+    color: #9e9e9e;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.top-search {
+    display: flex;
+    position: relative;
+}
+
+.top-search::after {
+    top: .5rem;
+    right: 1rem;
+    position: absolute;
+    content: "/";
+    padding: .2rem .8rem;
+    border: solid 1px rgba(128,128,128,.4);
+    border-radius: .4rem;
+    color: rgba(128,128,128,.4);
+    font-size: 1.3rem;
+    line-height: 1.5rem;
+    height: 2.2rem;
+    width: 2.2rem;
+}

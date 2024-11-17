@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "otterwiki.fullname" . }}
+  labels:
+    {{- include "otterwiki.labels" . | nindent 4 }}
+spec:
+  # An Otterwiki has no locking mechanism implemented. It's strongly recommended
+  # to not run more than one replica, this has not been tested.
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "otterwiki.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "otterwiki.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.env }}
+          env:
+{{ toYaml .Values.server.env | indent 12}}
+          {{- end }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "otterwiki.fullname" . }}-config
+              optional: true
+          - secretRef:
+              name: {{ include "otterwiki.fullname" . }}-config
+              optional: true
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /-/healthz
+              port: http
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 60
+            timeoutSeconds: 10
+            initialDelaySeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /-/healthz
+              port: http
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 60
+            timeoutSeconds: 10
+            initialDelaySeconds: 1
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+          - name: data
+            mountPath: /app-data
+            {{- if .Values.persistence.subPath }}
+            subPath: {{ .Values.persistence.subPath }}
+            {{- end }}
+          {{- end }}
+      volumes:
+      - name: data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "otterwiki.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

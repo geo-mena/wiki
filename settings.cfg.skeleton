@@ -1,0 +1,50 @@
+# App Settings
+DEBUG             = False
+# The SECRET_KEY is used for signing the session cookie.
+SECRET_KEY        = 'CHANGE ME'
+# The SITE_NAME is displayed on every page and email.
+SITE_NAME         = 'Otterwiki'
+# Configure the path to the repository:
+REPOSITORY        = '/path/to/the/repository/root'
+
+# The Logo can be the url of any image, even an attachment. e.g.:
+# SITE_LOGO       = '//Home/a/logo.png'
+
+# Permissions
+# 'ANONYMOUS' or 'REGISTERED' or 'APPROVED'
+
+READ_ACCESS       = 'ANONYMOUS'
+WRITE_ACCESS      = 'REGISTERED'
+ATTACHMENT_ACCESS = 'REGISTERED'
+AUTO_APPROVAL     = True
+EMAIL_NEEDS_CONFIRMATION = True
+# NOTIFY_ADMINS_ON_REGISTER = True
+# RETAIN_PAGE_NAME_CASE = False
+
+# Database Configuration
+# e.g. SQLALCHEMY_DATABASE_URI='sqlite:////absolute/path/to/the/sqlite/database/file'
+# see https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
+SQLALCHEMY_DATABASE_URI = ''
+
+# # Flask-Mail configuration
+# # See https://pythonhosted.org/Flask-Mail/ for configuration.
+
+# MAIL_DEFAULT_SENDER='no-reply@otterwiki.YOUR-ORGANISATION.TLD'
+
+# # Flask-Mail gmail
+# MAIL_SERVER = 'smtp.googlemail.com'
+# MAIL_PORT = 465
+# MAIL_USE_TLS = False
+# MAIL_USE_SSL = True
+# MAIL_USERNAME = 'MAIL_USERNAME'
+# MAIL_PASSWORD = 'MAIL_PASSWORD'
+
+# # For debgging the mail configuration
+# #
+# #   ./venv/bin/pip install maildump && ./venv/bin/maildump
+# #
+# MAIL_SERVER = 'localhost'
+# MAIL_PORT = 1025
+# MAIL_USERNAME = None
+# MAIL_PASSWORD = None
+

@@ -1,0 +1,127 @@
+[project]
+name = "otterwiki"
+description = "An Otter Wiki is Python-based software for collaborative content management, called a wiki. The content is stored in a git repository, which keeps track of all changes. Markdown is used as markup language."
+authors = [
+    { name = "Ralph Thesen", email = "mail@redimp.de" }
+    ]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+dynamic = ["version"]
+dependencies = [
+    "Werkzeug==3.0.6",
+    "Flask-Login==0.6.3",
+    "Flask-Mail==0.9.1",
+    "SQLAlchemy==2.0.36",
+    "Flask-SQLAlchemy==3.1.1",
+    "Flask==3.0.3",
+    "Jinja2==3.1.4",
+    "gitpython==3.1.42",
+    "cython==3.0.8",
+    "mistune==2.0.5",
+    "pygments==2.18.0",
+    "Pillow==10.4.0",
+    "unidiff==0.7.5",
+    "beautifulsoup4==4.12.3",
+    "pluggy==1.5.0",
+]
+keywords = ["wiki", "git", "markdown"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Wiki",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Topic :: Text Processing :: Markup",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+
+[project.urls]
+Homepage = "https://otterwiki.com"
+Github = "https://github.com/redimp/otterwiki"
+Issues = "https://github.com/redimp/otterwiki/issues/"
+"Demo" = "https://demo.otterwiki.com"
+
+[project.optional-dependencies]
+dev = [
+    "coverage",
+    "pytest",
+    "black",
+    "tox",
+    "tbump",
+    "rjsmin",
+    "git-changelog",
+    "beautifulsoup4",
+    ]
+
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["otterwiki"]
+
+[tool.setuptools.dynamic]
+version = {attr = "otterwiki.version.__version__"}
+
+[tool.black]
+# The default line length in black is 88 characters, in defiance of
+# pep8, which mandates 79 characters. However, consistency with pep8
+# is better than inconsistency.
+line-length = 79
+# Do not enforce double-quoted strings
+skip-string-normalization = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py3{11,12,13}
+isolated_build = True
+[testenv]
+deps = pytest
+commands =
+    pytest tests
+"""
+
+[tool.pytest.ini_options]
+testpaths = ["./tests"]
+filterwarnings = [
+    # venv/lib/python3.12/site-packages/flask_login/login_manager.py:488: DeprecationWarning: datetime.datetime.utcnow() is deprecated
+    "ignore: datetime.datetime.utcnow\\(\\) is deprecated:DeprecationWarning",
+]
+
+[tool.pyright]
+venvPath = "."
+venv = "venv"
+
+[tool.git-changelog]
+bump = "auto"
+convention = "conventional"
+in-place = true
+# filter-commits = ""
+marker-line = "<!-- insertion marker -->"
+output = "CHANGELOG.md"
+parse-refs = false
+parse-trailers = false
+provider = "github"
+repository = "."
+sections = "feat,fix,build,deps,refactor"
+template = "keepachangelog"
+version-regex = "^## \\\\[(?P<version>v?[^\\\\]]+)"
+versioning = "semver"
+zerover = false
+
+[tool.coverage.run]
+omit = [
+    "otterwiki/profiler.py",
+]
+[tool.coverage.html]
+directory = "coverage_html"
+
+
+# vim: set et ts=8 sts=4 sw=4 ai fenc=utf-8:

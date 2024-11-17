@@ -1,0 +1,486 @@
+{# vim: set et ts=8 sts=4 sw=4 ai: #}
+{% extends "page.html" %}
+{#
+    Head
+#}
+{% block head %}
+<style type="text/css" media="screen">
+.preview-background {
+    background-image: url('{{ url_for("static", filename="img/preview.png") | debug_unixtime }}');
+}
+</style>
+<link href="{{ url_for("static", filename="css/codemirror.css") | debug_unixtime }}" rel="stylesheet" />
+<link href="{{ url_for("static", filename="css/codemirror-theme.css") | debug_unixtime }}" rel="stylesheet" />
+<link href="{{ url_for("static", filename="css/codemirror-dialog.css") | debug_unixtime }}" rel="stylesheet" />
+{% endblock %}
+{% block navbarsearch %}
+{#- disable search block #}
+{% endblock %}
+{% block navbardropdown_outer %}
+{#- disable page drop down #}
+{% endblock %}
+{% block navbar_editor %}
+<button onclick="otterwiki_editor.undo()" class="btn btn-editor btn-xs ml-10" title="Undo"><i class="fas fa-undo"></i></button>
+<button onclick="otterwiki_editor.redo()" class="btn btn-editor btn-xs" style="margin-left: 0.1rem;" title="Redo"><i class="fas fa-redo"></i></button>
+{##}
+<button onclick="CodeMirror.commands.find(cm_editor)" class="btn btn-editor btn-xs ml-5 hidden-sm-and-down" title="Search"><i class="fas fa-search"></i></button>
+<button onclick="CodeMirror.commands.replace(cm_editor)" class="btn btn-editor btn-xs mr-5 hidden-sm-and-down" title="Search and Replace"><i class="fas fa-search fa-flip-both"></i></button>
+{##}
+<button onclick="otterwiki_editor.bold()" class="btn btn-editor btn-xs ml-5 hidden-sm-and-down" title="Bold"><i class="fa fa-bold"></i></button>
+<button onclick="otterwiki_editor.italic()" class="btn btn-editor btn-xs hidden-sm-and-down" title="Italic"><i class="fa fa-italic"></i></button>
+<button onclick="otterwiki_editor.strikethrough()" class="btn btn-editor btn-xs hidden-sm-and-down" title="Strikethrough"><i class="fa fa-strikethrough"></i></button>
+<button onclick="otterwiki_editor.code()" class="btn btn-editor btn-xs hidden-sm-and-down" title="Code"><i class="fa fa-code"></i></button>
+<button onclick="otterwiki_editor.header()" class="btn btn-editor btn-xs ml-5 hidden-sm-and-down" title="Header"><i class="fa fa-heading"></i></button>
+{##}
+<div class="dropdown">
+  <button class="btn btn-editor ml-5 hidden-sm-and-down" data-toggle="dropdown" type="button" id="navbar-dropdown-toggle-list" title="List Menu">
+    <i class="fas fa-list-ul"></i>
+  </button>
+  <div class="dropdown-menu dropdown-menu-right w-150" aria-labelledby="navbar-dropdown-toggle-list">
+    <a onclick="otterwiki_editor.ul()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-list-ul"></i>
+        </span>
+        Unordered List
+    </a>
+    <a onclick="otterwiki_editor.ol()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-list-ul"></i>
+        </span>
+        Ordered List
+    </a>
+    <a onclick="otterwiki_editor.cl()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-check-square"></i>
+        </span>
+        Checklist
+    </a>
+  </div>
+</div>
+{##}
+<button onclick="otterwiki_editor.link()" class="btn btn-editor btn-xs ml-5 hidden-sm-and-down" title="Link"><i class="fas fa-link"></i></button>
+<button onclick="otterwiki_editor.img()" class="btn btn-editor btn-xs hidden-sm-and-down" title="Picture"><i class="far fa-image"></i></button>
+{##}
+<div class="dropdown">
+  <button class="btn btn-editor ml-5 mr-5 hidden-sm-and-down" data-toggle="dropdown" type="button" id="navbar-dropdown-toggle-table" title="Table Menu">
+    <i class="fas fa-table"></i>
+  </button>
+  <div class="dropdown-menu dropdown-menu-right w-200" aria-labelledby="navbar-dropdown-toggle-table">
+    <a onclick="otterwiki_editor.table()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-table"></i>
+        </span>
+        Add / Format Table
+    </a>
+    <a onclick="otterwiki_editor.table_add_row()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-plus-circle"></i>
+        </span>
+        Add Row
+    </a>
+    <a onclick="otterwiki_editor.table_remove_row()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-minus-circle"></i>
+        </span>
+        Remove Row
+    </a>
+    <a onclick="otterwiki_editor.table_move_row_up()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-arrow-up"></i>
+        </span>
+        Move Row up
+    </a>
+    <a onclick="otterwiki_editor.table_move_row_down()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-arrow-down"></i>
+        </span>
+        Move Row down
+    </a>
+    <div class="dropdown-divider"></div>
+    <a onclick="otterwiki_editor.table_add_column()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-plus-circle"></i>
+        </span>
+        Add Column
+    </a>
+    <a onclick="otterwiki_editor.table_remove_column()" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-minus-circle"></i>
+        </span>
+        Remove Column
+    </a>
+    <a onclick="otterwiki_editor.table_move_column(-1)" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-arrow-left"></i>
+        </span>
+        Move Column left
+    </a>
+    <a onclick="otterwiki_editor.table_move_column(1)" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-arrow-right"></i>
+        </span>
+        Move Column right
+    </a>
+     <div class="dropdown-divider"></div>
+    <a onclick="otterwiki_editor.table_align_col('left')" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-align-left"></i>
+        </span>
+        Align left
+    </a>
+    <a onclick="otterwiki_editor.table_align_col('center')" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-align-center"></i>
+        </span>
+        Align center
+    </a>
+    <a onclick="otterwiki_editor.table_align_col('right')" href="#" class="dropdown-item-with-icon">
+        <span class="dropdown-icon">
+            <i class="fas fa-align-right"></i>
+        </span>
+        Align right
+    </a>
+  </div>
+</div>
+{% endblock %}
+{#
+    Navbar
+#}
+{% block bodytop %}
+{%if config["COMMIT_MESSAGE"] != "DISABLED"%}
+<div class="modal" id="modal-commit" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <a href="#" class="close" onclick="otterwiki.toggleModal('modal-commit')" role="button" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+      <h5 class="modal-title">Save {{pagename}}</h5>
+      <form id="saveform" action="{{ url_for('save', path=pagepath) }}" method="post" autocomplete="off">
+      <input id="save_content" type="hidden" name="content" value="">
+      <input id="save_cursor_line" type="hidden" name="cursor_line" value="" />
+      <input id="save_cursor_ch" type="hidden" name="cursor_ch" value="" />
+        <div class="form-group">
+{%if config["COMMIT_MESSAGE"] == "REQUIRED"%}
+            <label for="commit-message" class="required">Commit Message</label>
+            <input name="commit" id="commit-message" type="text" class="form-control" placeholder="Your commit message here" required="required">
+{% else %}
+            <label for="commit-message">Commit Message</label>
+            <input name="commit" id="commit-message" type="text" class="form-control" placeholder="Your (optional) commit message here">
+{% endif %}
+        </div>
+        <input class="btn btn-primary btn-block" type="submit" value="Save">
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+{#
+    Sidebar Menu
+#}
+{% block menu %}
+{{ super() }}
+{% endblock %}
+{#
+    extra-navbar
+#}
+{% block extra_nav -%}
+<div id="extranav-attachments">
+<h5 class="sidebar-title"><a class="sidebar-title-link" href="{{ url_for('attachments', pagepath=pagepath ) }}">Attachments <i class="fa fa-paperclip"></i></a></h5>
+                    <div class="sidebar-divider" ></div>
+                    <form class="ml-10">
+                        <select class="form-control" id="attachment-filename" onchange="otterwiki_editor.update_attachment_preview(this);">
+                          <option value="" selected="selected" disabled="disabled">Select an attachment</option>
+{% for f in files %}
+                          <option value="{{f.filename}}/--/{{f.url}}/--/{{f.thumbnail_url or ''}}">{{f.filename}}</option>
+{% endfor %}
+                        </select>
+                        <div id="extranav-preview" class="my-5"></div>
+                        <div class="custom-radio mt-5 ml-5">
+                          <input type="radio" name="attachment-type" id="attachment-link" value="link" checked="checked">
+                          <label for="attachment-link">as link</label>
+                        </div>
+                        <div class="custom-radio mt-5 ml-5">
+                          <input type="radio" name="attachment-type" id="attachment-image" value="image">
+                          <label for="attachment-image">as image</label>
+                        </div>
+                        <div class="custom-radio mt-5 ml-5">
+                          <input type="radio" name="attachment-type" id="attachment-thumbnail" value="thumbnail">
+                          <label for="attachment-thumbnail">as link with thumbnail</label>
+                        </div>
+                        <div class="custom-checkbox mt-5 ml-5">
+                          <input type="checkbox" id="attachment-absolute" value="checked">
+                          <label for="attachment-absolute">use absolute path</label>
+                        </div>
+                        <button class="btn mt-5" type="button" onclick="otterwiki_editor.insert_attachment()" title="Copy into the editor" ><i class="fas fa-paste"></i></button>
+                    </form>
+
+
+                    <p class="font-size-12 p-15 text-muted">Additional media can be added via the 'Attachments' of this page, or, you can drag and drop a file into the web editor and it will be uploaded and embedded when the page is saved.</p>
+
+                    <h5 class="sidebar-title">WikiLink <i class="fa fa-link"></i></h5>
+                    <div class="sidebar-divider" ></div>
+                    <form class="ml-10">
+                        <select class="form-control" id="wikilink">
+                          <option value="" selected="selected" disabled="disabled">Select an page to link</option>
+{% for p in pages %}
+                          <option value="{{p[1]}}">{{p[1]}}</option>
+{% endfor %}
+                        </select>
+                        <button class="btn mt-5" type="button" onclick="otterwiki_editor.insert_wikilink()" title="Copy into the editor" ><i class="fas fa-paste"></i></button>
+                    </form>
+                    </div>
+{{ super() }}
+{%- endblock extra_nav %}
+{#
+    Content
+#}
+{% block content_wrapper %}
+<!-- Content wrapper start -->
+<form id="dummy">
+{# FIXME #}
+<textarea id="content_editor" name="content_editor">{{ content_editor }}</textarea>
+</form>
+<div id="editor_block" style="display: block;"></div>
+<div id="preview_block" style="display: none;"></div>
+<div id="editor-bottom-panel" class="editor-bottom-panel" style="display:none;">
+    <a href="#" onclick="otterwiki.toggleMarkdownHelp()" class="btn btn-xsm"><i class="fab fa-markdown"></i> Markdown Syntax</a>
+    <div id="editor-help-markdown" class="content card border rounded-top p-5" style="display: none;">
+        <a href="{{ url_for("syntax") }}" class="btn btn-xsm" target="_blank">
+            <i class="fas fa-expand-arrows-alt"></i>
+                    Full Syntax Guide
+        </a>
+        <a href="#" onclick="otterwiki.toggleMarkdownHelp()" class="text-muted" style="float:right;">
+            <i class="far fa-times-circle"></i>
+        </a>
+
+          {% include "snippets/syntax.html" %}
+    </div>
+</div>
+{# <!-- Content wrapper end --> #}
+{% endblock %}
+{#
+    Navbar
+#}
+{% block navbar %}
+<a href="{{ url_for('view', path=pagepath) }}" class="btn btn-danger mr-5" role="button" title="Cancel"><i class="fas fa-window-close"></i></a>
+{%if config["COMMIT_MESSAGE"] == "DISABLED"%}
+<form id="saveform" action="{{ url_for('save', path=pagepath) }}" method="post" autocomplete="off">
+<input id="save_content" type="hidden" name="content" value="">
+<input id="save_cursor_line" type="hidden" name="cursor_line" value="" />
+<input id="save_cursor_ch" type="hidden" name="cursor_ch" value="" />
+<button class="btn btn-success mr-5" title="Save"><i class="fas fa-save"></i></button>
+<input name="commit" type="hidden" value="">
+</form>
+{% else %}
+<button class="btn btn-success mr-5" onclick="otterwiki.toggleModal('modal-commit')" title="Save"><i class="fas fa-save"></i></button>
+{% endif %}
+<button id="preview_btn" class="btn btn-primary" style="width: 1rem;" title="Preview"><i class="far fa-eye" ></i></button>
+<button id="editor_btn" class="btn btn-primary" style="width: 1rem; display:none;" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+{% endblock %}
+{#
+    Javascript
+#}
+{% block js %}
+{{ super() }}
+{# load the codemirror stuff #}
+<script src="{{ url_for("static", filename="js/codemirror.min.js") | debug_unixtime }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/cm-continuelist.js") | debug_unixtime }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/cm-panel.js") }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/inline-attachment.js") }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/codemirror-4.inline-attachment.js") }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/cm-modes.min.js") | debug_unixtime }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/cm-search.js") | debug_unixtime }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/cm-searchcursor.js") | debug_unixtime }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for("static", filename="js/cm-dialog.js") | debug_unixtime }}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    const cm_editor = CodeMirror.fromTextArea(document.getElementById("content_editor"), {
+        mode: 'markdown',
+        lineNumbers: true,
+        theme: "otterwiki",
+        lineWrapping: true,
+        indentWithTabs: false,
+        indentUnit: 4,
+        autofocus: true,
+        fencedCodeBlockHighlighting: true,
+        fencedCodeBlockDefaultMode: "bash",
+        extraKeys: {
+            "Enter": "newlineAndIndentContinueMarkdownList",
+            'Cmd-S': function () {
+                return false
+            },
+            'Ctrl-S': function () {
+                return false
+            },
+            "Shift-Tab": "indentLess",
+        },
+      });
+    cm_editor.setCursor({ line: {{cursor_line or 0}}, ch: {{cursor_ch or 0}} } );
+    const bottom_panel = document.getElementById('editor-bottom-panel');
+    bottom_panel.style.display = 'block';
+    cm_editor.addPanel(bottom_panel, {position: "bottom", stable: true});
+
+{#
+thx to https://github.com/sparksuite/simplemde-markdown-editor/issues/328#issuecomment-227075500
+#}
+    inlineAttachment.editors.codemirror4.attach(cm_editor, {
+        uploadUrl: '{{ url_for('inline_attachment', pagepath=pagepath) }}',
+        urlText: "![]({filename})",
+        onFileUploadResponse: function(xhr) {
+            var result = JSON.parse(xhr.responseText),
+            filename = result[this.settings.jsonFieldName];
+
+            if (result && filename) {
+                var newValue;
+                if (typeof this.settings.urlText === 'function') {
+                    newValue = this.settings.urlText.call(this, filename, result);
+                } else {
+                    newValue = this.settings.urlText.replace(this.filenameTag, filename);
+                }
+                var text = this.editor.getValue().replace(this.lastValue, newValue);
+                this.editor.setValue(text);
+                this.settings.onFileUploaded.call(this, filename);
+            }
+            return false;
+        }
+    });
+
+
+
+    /* document elements */
+    const content_wrapper = document.querySelector("#content-wrapper")
+    const preview_btn = document.querySelector("#preview_btn");
+    const editor_btn = document.querySelector("#editor_btn");
+    const sidebar_toc = document.querySelector("#sidebar-toc");
+    const extranav_toc = document.querySelector("#extranav-toc");
+    const extranav_attachments = document.querySelector("#extranav-attachments");
+    const editor_blocks = [
+        cm_editor.display.wrapper,
+        bottom_panel,
+        ]; // document.querySelector("#editor_block");
+    const preview_block = document.querySelector("#preview_block");
+    var cm_last_change = 0;
+    var cm_save_timer = null;
+
+    save_draft = function() {
+        cm_last_change = Date.now();
+        if (cm_save_timer != null) {
+            window.clearTimeout(cm_save_timer);
+            cm_save_timer = null;
+        }
+        const formData = new FormData();
+        formData.append("content", cm_editor.getValue());
+        formData.append("cursor_line", cm_editor.getCursor().line);
+        formData.append("cursor_ch", cm_editor.getCursor().ch);
+        formData.append("revision", "{{revision}}");
+        fetch("{{ url_for('draft', path=pagepath) }}", {
+            method: 'POST',
+            body: formData,
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .catch(function () {
+                console.log('Error saving draft ...');
+            });
+    }
+    const handleUnload = (event) => {
+        if (cm_editor != null && !cm_editor.doc.isClean()) {
+            event.preventDefault();
+            // No browser actually displays this message anymore.
+            // But Chrome requires it to be defined else the popup won't show.
+            event.returnValue = '';
+            save_draft();
+        }
+    };
+
+    window.addEventListener('load', function () {
+        /*
+            prevent user leaving with unsaved changes
+            Known Issue: this doesn't work reliable in Safari
+        */
+        cm_editor.on('change', () => {
+            window.removeEventListener('beforeunload', handleUnload);
+            window.addEventListener('beforeunload', handleUnload);
+            if (cm_save_timer == null) {
+                cm_save_timer = window.setTimeout(save_draft, 6000);
+            }
+        });
+    }); // page load
+
+    /* save */
+    document.getElementById('saveform').onsubmit = function() {
+        const content_editor = cm_editor.getValue();
+        const cm_cursor = cm_editor.getCursor();
+        document.getElementById('save_content').value = content_editor;
+        document.getElementById('save_cursor_line').value = cm_cursor.line;
+        document.getElementById('save_cursor_ch').value = cm_cursor.ch;
+        cm_editor.doc.markClean();
+    };
+    /* preview */
+    preview_btn.onclick = function() {
+        {# toggle preview/edit #}
+        preview_block.style.display = 'block';
+        for (const editor_block of editor_blocks) {
+            editor_block.style.display = 'none';
+        }
+        editor_btn.style.display = '';
+        preview_btn.style.display = 'none';
+        extranav_attachments.style.display = 'none';
+        content_wrapper.classList.add("preview-background");
+
+        const formData = new FormData();
+        formData.append("content", cm_editor.getValue());
+        formData.append("cursor_line", cm_editor.getCursor().line);
+        formData.append("cursor_ch", cm_editor.getCursor().ch);
+
+        /* FIXME: display loader */
+        fetch("{{ url_for('preview', path=pagepath) }}", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                preview_block.innerHTML = data.preview_content;
+                sidebar_toc.innerHTML = data.preview_toc;
+                extranav_toc.innerHTML = data.preview_toc;
+            })
+            .then(function () {
+                cursor = document.getElementById("otterwiki_cursor");
+                // update MathJax
+                MathJax.typeset();
+                // update Mermaid
+                otterwiki.update_mermaid();
+                if (cursor) {
+                    cursor.scrollIntoView({
+                        behavior: 'instant',
+                        block: 'center',
+                        inline: 'nearest',
+                    });
+                }
+            })
+            .catch(function () {
+                console.log('Error fetching preview ...');
+            });
+    }
+    /* edit */
+    editor_btn.onclick = function() {
+        {# toggle preview/edit #}
+        preview_block.style.display = 'none';
+        for (const editor_block of editor_blocks) {
+            editor_block.style.display = 'block';
+        }
+        extranav_attachments.style.display = 'block';
+        editor_btn.style.display = 'none';
+        preview_btn.style.display = '';
+        sidebar_toc.innerHTML = '';
+        extranav_toc.innerHTML = '';
+        content_wrapper.classList.remove("preview-background");
+        {# focus editor #}
+
+        cm_editor.focus()
+    }
+</script>
+{% endblock %}

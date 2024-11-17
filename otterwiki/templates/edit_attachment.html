@@ -1,0 +1,79 @@
+{# vim: set et ts=8 sts=4 sw=4 ai: #}
+{% extends "page.html" %}
+{% block content %}
+<div class="w-full mw-full p-0 clearfix">
+    <h2 class="float-left">Edit <strong>{{filename}}</strong></h2>
+</div>
+{# rename #}
+{% if has_permission("UPLOAD") %}
+<div class="w-600 mw-full">
+<div class="card">
+<form action="{{ url_for("edit_attachment", pagepath=pagepath, filename=filename) }}" method="POST" class="form-inline">
+  <div class="form-group">
+    <label for="new_filename" class="required w-150">New filename</label>
+    <input type="text" class="form-control" name="new_filename" id="new_filename" placeholder="{{filename}}" value="{{new_filename if new_filename else filename}}">
+  </div>
+  <div class="form-group">
+    <label for="message" class="w-150">Commit message</label>
+    <input type="text" class="form-control" name="message" id="message" placeholder="Renamed {{filename}} to {{new_filename if new_filename else "..."}}" value="{{ message if message }}">
+  </div>
+  <div class="form-group position-relative m-0">
+    <input class="btn btn-primary" type="submit" value="Rename">
+    <input class="btn btn-danger position-absolute right-0" type="submit" name="delete" value="Delete">
+  </div>
+</form>
+</div>{# card #}
+{# replace #}
+<div class="card">
+  <form action="{{ url_for("attachments" , pagepath=pagepath) }}" method="POST" class="form-inline" enctype=multipart/form-data>
+      <input name="filename" type="hidden" value="{{filename}}">
+  <div class="custom-file">
+    <input name="file" type="file" id="file-upload" multiple="multiple">
+    <label for="file-upload">Choose files to upload</label>
+  </div>
+  <div class="form-group">
+      <input type="text" class="form-control" name="message" id="message" placeholder="Commit message" value="{{message}}">
+  </div>
+  <div class="form-group m-0">
+    <input class="btn btn-primary" type="submit" value="Replace">
+  </div>
+  </form>
+</div>{# card #}
+</div>{# w-600 container #}
+{% endif %}{# has_permission("UPLOAD") #}
+{# log #}
+<div class="w-full mw-full my-15">
+    <div class="table-responsive table-striped">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Author</th>
+            <th class="w-half">Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+{% for entry in log %}
+          <tr class="align-top">
+              <td class="font-size-12 min text-nowrap"><span class="datetime">{{entry.datetime|format_datetime}}</span>
+                  &nbsp;<a href="{{ url_for(
+                                        "get_attachment",
+                                        pagepath=pagepath,
+                                        filename=filename,
+                                        revision=entry.revision,
+                      ) }}" class="btn revision-small">{{entry.revision}}</a>
+{% if has_permission("UPLOAD") %}
+&nbsp;<a href="{{ url_for("revert", revision=entry.revision) }}"><i class="fas fa-undo" alt="revert" title="revert commit {{entry.revision}}"></i></a>
+</td>
+{% endif %}
+{# author #}
+            <td class="min" style="white-space:nowrap">{%if not entry.author_email%}{{entry.author_name}}{%else%}<a href="mailto:{{entry.author_email}}">{{entry.author_name}}</a>{%endif%}</td>
+{# files #}
+            <td class="text-wrap">{{entry.message}}</td>
+          </tr>
+{% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+{% endblock %}

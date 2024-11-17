@@ -1,0 +1,19 @@
+---
+#
+# This docker-compose.yml is for running the latest development version
+# of An Otter Wiki.
+#
+# Please read the Installation guide <https://otterwiki.com/Installation>
+# to get started.
+#
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      # forward the http port to 8080
+      - "8080:80"
+    volumes:
+      # mount the local directory ./app-data into the container
+      # (so settings, database and repository are accessible)
+      - ./app-data:/app-data

@@ -1,0 +1,146 @@
+{# vim: set et ts=8 sts=4 sw=4 ai ft=jinja.html: #}
+{% extends "settings.html" %}
+{% block content %}
+<div class="card m-auto m-lg-20" id="sidebar_preferences">
+<div class="mw-full">
+<form action="{{ url_for("admin_sidebar_preferences") }}" method="POST">
+<h2 class="card-title">Sidebar Preferences</h2>
+<h3 class="card-title">Shortcuts</h3>
+
+<div class="mb-10">
+Shortcuts not listed in the sidebar are available via the <span class="btn btn-square btn-sm"><i class="fas fa-ellipsis-v"></i></span> Menu.
+</div>
+{% for name, description in [
+    ("home", '<span class="btn btn-square btn-sm"><i class="fas fa-home"></i></span> Home'),
+    ("pageindex", '<span class="btn btn-square btn-sm"><i class="fas fa-list"></i></span> A - Z'),
+    ("changelog", '<span class="btn btn-square btn-sm"><i class="fas fa-history"></i></span> Changelog'),
+    ("createpage", '<span class="btn btn-square btn-sm"><i class="far fa-file"></i></span> Create Page'),
+] %}
+  <div class="form-group">
+    <div class="custom-checkbox">
+        <input {%if name in config.SIDEBAR_SHORTCUTS.lower().split() %}checked=checked{% endif %} type="checkbox" id="shortcut_{{name|lower}}" name="sidebar_shortcut_{{name|lower}}" value="True">
+        <label for="shortcut_{{name|lower}}">{{description|safe}}</tt></label>
+    </div>
+  </div>
+{% endfor %}
+{##}
+<div class="form-text pt-0 mt-0 mb-20"></div>
+{##}
+<h3 class="card-title">Custom Menu</h3>
+<div class="my-5">
+    The menu is used to display a menu of individual pages or external links within easy reach in the sidebar. To link a wiki page, the full path needs to be entered in the field <code>Page/Title</code>. For external links, pick a title and enter the url in the <code>Link</code> field.
+</div>
+<table>
+    <thead>
+        <th>&nbsp;</th>
+        <th>Page/Link</th>
+        <th>Title <em>(optional)</em></th>
+        <th>&nbsp;</th>
+    </thead>
+    <tbody id="custom-page-index">
+{% for entry in custom_menu + [{"link":"","title":""}] %}
+        <tr>
+            <td class="pr-10">
+                <span class="btn btn-square btn-sm btn-handle"><i class="fas fa-arrows-alt"></i></span>
+            </td>
+            <td><input type="text" name="link" placeholder="..." class="w-200 form-control" value="{{entry.link}}"/></td>
+            <td><input type="text" name="title" placeholder="" class="w-200 form-control"/ value="{{entry.title}}"> </td>
+            <td class="pl-10">
+                <span class="btn btn-square btn-sm" onclick="cloneRow(this);"><i class="fas fa-clone"></i></span>
+                <span class="btn btn-square btn-sm btn-danger" onclick="deleteRow(this);"><i class="far fa-trash-alt"></i></span>
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+<div class="form-group">
+        <label for="find-page-select" class="mt-5" style="display:block;">Select page to add</label>
+        <select id="find-page-select" size="1" class="form-control w-400 mw-full" style="display:inline;">
+        {%- for page in [""] + pages %}
+            <option value="{{page}}">{{page if page else "..."}}</option>
+        {%- endfor %}
+        </select>
+        <span class="btn btn-square btn-sm" onclick="addPageRow();"><i class="fas fa-level-up-alt"></i></span>
+</div>
+{##}
+<div class="form-text pt-0 mt-0 mb-20"></div>
+{##}
+<h3 class="card-title">Page Index</h3>
+    <div class="form-group">
+        <label for="sidebar_menutree_mode" class="required">Page Index Mode</label>
+        <select class="form-control w-md-400" id="sidebar_menutree_mode" name="sidebar_menutree_mode">
+{% for mode in [("", "Not displayed"),("SORTED","Directories and pages, sorted"),("DIRECTORIES_GROUPED","Directories and pages, with directories grouped first"),("DIRECTORIES_ONLY","Directories only")] %}
+            <option value="{{mode[0]}}"{%if config.SIDEBAR_MENUTREE_MODE == mode[0] %} selected="selected"{%endif%}>{{mode[1]}}</option>
+{% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="sidebar_menutree_maxdepth">Maximal depth of pages and directories listed.</label>
+        <input name="sidebar_menutree_maxdepth" type="text" placeholder="unlimited" class="form-control w-md-400" id="sidebar_menutree_maxdepth" value="{{ config.SIDEBAR_MENUTREE_MAXDEPTH or "" }}">
+        <div class="mt-5">
+            With <code>MAXDEPTH=0</code> only the pages and directories of the same depth will be displayed. With <code>MAXDEPTH=n</code> childes up to depth <code>n</code> will be displayed. Without <code>MAXDEPTH</code> all childes will be displayed.
+        </div>
+    </div>
+{##}
+<div class="form-text pt-0 mt-0 mb-20"></div>
+{##}
+<div class="mt-10">
+    <input class="btn btn-primary" name="update_preferences" type="submit" value="Save Preferences">
+</div>
+</form>
+</div>
+</div>
+{##}
+{% endblock %}
+{% block js%}
+<script src="{{ url_for("static", filename="js/Sortable.min.js") | debug_unixtime }}"></script>
+{{ super() }}
+<script type="text/javascript">
+    Sortable.create(document.getElementById('custom-page-index'), {
+        sort: true,
+        handle: '.btn-handle',
+        animation: 150,
+    });
+    function cloneRow(btn, empty = false) {
+        var row;
+        if (btn == null) {
+            row = document.getElementById('custom-page-index').lastElementChild;
+        } else {
+            row = btn.closest("tr");
+        }
+        var tbody = row.closest("tbody");
+        var new_row = row.cloneNode(true);
+        if (empty) {
+            for (c of new_row.querySelectorAll('input')) {
+                c.value = '';
+            }
+        }
+        row.parentNode.insertBefore(new_row, row.nextSibling);
+        return new_row;
+    }
+    function deleteRow(btn) {
+        var table = btn.closest("table")
+        var row = btn.closest("tr");
+        // the thead row is counted, too.
+        if (table.rows.length < 3) {
+            for (c of row.querySelectorAll('input')) {
+                c.value = '';
+            }
+        } else {
+            table.deleteRow(row.rowIndex);
+        }
+    }
+    function addPageRow() {
+        var pageSelect = document.getElementById('find-page-select');
+        var tbody = document.getElementById('custom-page-index');
+        var table = tbody.closest("table");
+        var lastrow = document.getElementById('custom-page-index').lastElementChild;
+        if (lastrow.querySelector("input[name='link']").value == "")
+            row = lastrow;
+        else
+            row = cloneRow(null, true);
+        row.querySelector("input[name='link']").value = pageSelect.value;
+        row.querySelector("input[name='title']").value = '';
+    }
+</script>
+{% endblock %}
