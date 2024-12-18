@@ -60,6 +60,6 @@ services:
 
 ## License
 
-An Otter Wiki is open-source software licensed under the [MIT License](https://github.com/redimp/otterwiki/blob/main/LICENSE).
+An Otter Wiki is open-source software licensed under the [MIT License](LICENSE).
 
 [modeline]: # ( vim: set fenc=utf-8 spell spl=en sts=4 et tw=72: )
